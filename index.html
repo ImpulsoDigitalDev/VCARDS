@@ -3,249 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Tarjetas Digitales - Leonova Studio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Generador de Tarjetas - Leonova Studio</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+        }
         
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .glass-effect { 
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .sidebar {
+            width: 300px;
+            background: rgba(255,255,255,0.95);
+            padding: 20px;
+            overflow-y: auto;
         }
-        .card-shadow { 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+        
+        .main {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .editor-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(0, 0, 0, 0.1);
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 350px;
+            text-align: center;
         }
-        .template-card {
-            transition: all 0.3s ease;
+        
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .name { font-size: 24px; font-weight: bold; margin-bottom: 5px; color: #333; }
+        .job { color: #667eea; font-weight: 600; margin-bottom: 10px; }
+        .company { 
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        .contact { text-align: left; margin: 20px 0; }
+        .contact-item { 
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        .contact-icon { 
+            width: 16px; 
+            height: 16px; 
+            background: #667eea; 
+            border-radius: 3px; 
+            margin-right: 10px; 
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
             cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+            font-weight: 600;
         }
-        .template-card:hover {
-            transform: scale(1.05);
+        
+        .btn:hover { transform: translateY(-2px); }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
+        .input-group input { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 14px;
         }
-        .template-card.active {
-            ring: 2px solid #8B5CF6;
+        
+        .template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .template-btn {
+            padding: 15px 10px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
         }
-        .color-option {
+        .template-btn.active { border-color: #667eea; background: #f0f4ff; }
+        
+        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .color-btn {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
             border: 3px solid transparent;
+            cursor: pointer;
         }
-        .color-option:hover {
-            transform: scale(1.1);
+        .color-btn.active { border-color: white; box-shadow: 0 0 0 2px #667eea; }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: none;
+            z-index: 1000;
         }
-        .color-option.active {
-            border-color: white;
-            box-shadow: 0 0 0 2px #8B5CF6;
-        }
-        .preview-card {
-            transition: all 0.3s ease;
-            transform-style: preserve-3d;
-        }
-        .font-inter { font-family: 'Inter', sans-serif; }
-        .font-poppins { font-family: 'Poppins', sans-serif; }
-        .font-roboto { font-family: 'Roboto', sans-serif; }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
-    <div class="flex h-screen">
-        <!-- Panel Editor -->
-        <div class="w-80 editor-panel overflow-y-auto">
-            <div class="p-6">
-                <!-- Header -->
-                <div class="text-center mb-6">
-                    <div class="flex items-center justify-center mb-2">
-                        <svg class="w-8 h-8 text-purple-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
-                        </svg>
-                        <h1 class="text-xl font-bold text-gray-800">Leonova Studio</h1>
-                    </div>
-                    <p class="text-sm text-gray-600">Generador de Tarjetas Digitales</p>
-                </div>
-
-                <!-- Plantillas -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Plantillas</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="template-card active rounded-lg p-3 bg-gradient-to-br from-purple-500 to-pink-500 text-white text-center" onclick="selectTemplate('elegant')">
-                            <div class="text-xs font-medium">Elegante</div>
-                        </div>
-                        <div class="template-card rounded-lg p-3 bg-gradient-to-br from-blue-500 to-cyan-500 text-white text-center" onclick="selectTemplate('modern')">
-                            <div class="text-xs font-medium">Moderna</div>
-                        </div>
-                        <div class="template-card rounded-lg p-3 bg-gradient-to-br from-gray-700 to-gray-900 text-white text-center" onclick="selectTemplate('minimal')">
-                            <div class="text-xs font-medium">Minimalista</div>
-                        </div>
-                        <div class="template-card rounded-lg p-3 bg-gradient-to-br from-green-500 to-teal-500 text-white text-center" onclick="selectTemplate('creative')">
-                            <div class="text-xs font-medium">Creativa</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Paleta de Colores -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Colores</h3>
-                    <div class="grid grid-cols-4 gap-3">
-                        <div class="color-option active bg-gradient-to-br from-purple-500 to-pink-500" onclick="selectColor('purple')" data-color="purple"></div>
-                        <div class="color-option bg-gradient-to-br from-blue-500 to-cyan-500" onclick="selectColor('blue')" data-color="blue"></div>
-                        <div class="color-option bg-gradient-to-br from-green-500 to-teal-500" onclick="selectColor('green')" data-color="green"></div>
-                        <div class="color-option bg-gradient-to-br from-orange-500 to-red-500" onclick="selectColor('orange')" data-color="orange"></div>
-                        <div class="color-option bg-gradient-to-br from-pink-500 to-rose-500" onclick="selectColor('pink')" data-color="pink"></div>
-                        <div class="color-option bg-gradient-to-br from-indigo-500 to-purple-500" onclick="selectColor('indigo')" data-color="indigo"></div>
-                        <div class="color-option bg-gradient-to-br from-gray-700 to-gray-900" onclick="selectColor('dark')" data-color="dark"></div>
-                        <div class="color-option bg-gradient-to-br from-yellow-400 to-orange-500" onclick="selectColor('gold')" data-color="gold"></div>
-                    </div>
-                </div>
-
-                <!-- Información Personal -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Información</h3>
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
-                            <input type="text" id="fullName" value="Juan Carlos Pérez" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" onchange="updatePreview()">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Cargo</label>
-                            <input type="text" id="jobTitle" value="Director Creativo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" onchange="updatePreview()">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Empresa</label>
-                            <input type="text" id="company" value="Leonova Studio" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" onchange="updatePreview()">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-                            <textarea id="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none" onchange="updatePreview()">Especialista en diseño digital y experiencias de usuario.</textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Contacto -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Contacto</h3>
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                            <input type="tel" id="phone" value="+1 (555) 123-4567" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" onchange="updatePreview()">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" id="email" value="juan@leonova.studio" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" onchange="updatePreview()">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Sitio Web</label>
-                            <input type="url" id="website" value="www.leonova.studio" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" onchange="updatePreview()">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
-                            <input type="text" id="location" value="Madrid, España" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" onchange="updatePreview()">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Personalización -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Personalización</h3>
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Fuente</label>
-                            <select id="fontFamily" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" onchange="updatePreview()">
-                                <option value="inter">Inter</option>
-                                <option value="poppins">Poppins</option>
-                                <option value="roboto">Roboto</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Foto de Perfil</label>
-                            <input type="file" id="profileImage" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" onchange="handleImageUpload(this)">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Botones de Acción -->
-                <div class="space-y-3">
-                    <button onclick="downloadCard()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
-                        Descargar Tarjeta
-                    </button>
-                    <button onclick="generateLink()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
-                        Generar Enlace
-                    </button>
-                    <button onclick="saveVCard()" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
-                        Guardar vCard
-                    </button>
-                </div>
-            </div>
+<body>
+    <div class="sidebar">
+        <h1 style="text-align: center; margin-bottom: 20px; color: #333;">🎨 Leonova Studio</h1>
+        <p style="text-align: center; margin-bottom: 30px; color: #666; font-size: 14px;">Generador de Tarjetas Digitales</p>
+        
+        <h3 style="margin-bottom: 10px; color: #333;">Plantillas</h3>
+        <div class="template-grid">
+            <button class="template-btn active" onclick="changeTemplate('elegant')">Elegante</button>
+            <button class="template-btn" onclick="changeTemplate('modern')">Moderna</button>
+            <button class="template-btn" onclick="changeTemplate('minimal')">Minimalista</button>
+            <button class="template-btn" onclick="changeTemplate('creative')">Creativa</button>
         </div>
-
-        <!-- Vista Previa -->
-        <div class="flex-1 p-8 overflow-auto">
-            <div class="max-w-md mx-auto">
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-white mb-2">Vista Previa</h2>
-                    <p class="text-white/70">Los cambios se reflejan en tiempo real</p>
-                </div>
-
-                <!-- Tarjeta Preview -->
-                <div id="cardPreview" class="preview-card">
-                    <!-- El contenido se genera dinámicamente -->
-                </div>
-
-                <!-- Controles de Vista -->
-                <div class="flex justify-center mt-6 space-x-4">
-                    <button onclick="toggleView('desktop')" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16A2,2 0 0,0 3,18H10V20H8V22H16V20H14V18H21A2,2 0 0,0 23,16V4C23,2.89 22.1,2 21,2Z"/>
-                        </svg>
-                    </button>
-                    <button onclick="toggleView('mobile')" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M17,19H7V5H17M17,1H7C5.89,1 5,1.89 5,3V21A2,2 0 0,0 7,23H17A2,2 0 0,0 19,21V3C19,1.89 18.1,1 17,1Z"/>
-                        </svg>
-                    </button>
-                </div>
+        
+        <h3 style="margin-bottom: 10px; color: #333;">Colores</h3>
+        <div class="color-grid">
+            <button class="color-btn active" style="background: linear-gradient(135deg, #667eea, #764ba2);" onclick="changeColor('purple')"></button>
+            <button class="color-btn" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);" onclick="changeColor('blue')"></button>
+            <button class="color-btn" style="background: linear-gradient(135deg, #10b981, #14b8a6);" onclick="changeColor('green')"></button>
+            <button class="color-btn" style="background: linear-gradient(135deg, #f59e0b, #ef4444);" onclick="changeColor('orange')"></button>
+        </div>
+        
+        <h3 style="margin-bottom: 15px; color: #333;">Información</h3>
+        <div class="input-group">
+            <label>Nombre</label>
+            <input type="text" id="fullName" value="Leonardo Vásquez" onkeyup="updateCard()">
+        </div>
+        <div class="input-group">
+            <label>Cargo</label>
+            <input type="text" id="jobTitle" value="CEO & Fundador" onkeyup="updateCard()">
+        </div>
+        <div class="input-group">
+            <label>Empresa</label>
+            <input type="text" id="company" value="Leonova Studio" onkeyup="updateCard()">
+        </div>
+        <div class="input-group">
+            <label>Email</label>
+            <input type="email" id="email" value="leo-contact@leonovastudio.shop" onkeyup="updateCard()">
+        </div>
+        <div class="input-group">
+            <label>Teléfono</label>
+            <input type="tel" id="phone" value="+18687786115" onkeyup="updateCard()">
+        </div>
+        <div class="input-group">
+            <label>Sitio Web</label>
+            <input type="text" id="website" value="www.leonovastudio.shop" onkeyup="updateCard()">
+        </div>
+        
+        <h3 style="margin: 20px 0 15px 0; color: #333;">Fotografía</h3>
+        <div class="input-group">
+            <label>Foto de Perfil</label>
+            <input type="file" id="profileImage" accept="image/*" onchange="handleImageUpload(this)" style="margin-bottom: 10px;">
+            <div id="imagePreview" style="width: 60px; height: 60px; border-radius: 50%; background: #f0f0f0; margin: 10px auto; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px; text-align: center; line-height: 1.2;">Sin imagen</div>
+        </div>
+        
+        <button class="btn" onclick="downloadCard()">📥 Descargar Tarjeta</button>
+        <button class="btn" onclick="saveVCard()">📇 Guardar vCard</button>
+        <button class="btn" onclick="generateLink()">🔗 Generar Enlace</button>
+    </div>
+    
+    <div class="main">
+        <div>
+            <h2 style="color: white; text-align: center; margin-bottom: 20px; font-size: 28px;">Vista Previa</h2>
+            <p style="color: rgba(255,255,255,0.8); text-align: center; margin-bottom: 30px;">Los cambios se reflejan en tiempo real</p>
+            
+            <div id="cardPreview" class="card">
+                <!-- La tarjeta se genera aquí -->
             </div>
         </div>
     </div>
+    
+    <div id="notification" class="notification"></div>
 
     <script>
         let currentTemplate = 'elegant';
         let currentColor = 'purple';
-        let currentFont = 'inter';
-        let profileImageUrl = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face';
-
-        const colorSchemes = {
-            purple: { primary: 'from-purple-500 to-pink-500', secondary: 'purple-600', accent: 'purple-100' },
-            blue: { primary: 'from-blue-500 to-cyan-500', secondary: 'blue-600', accent: 'blue-100' },
-            green: { primary: 'from-green-500 to-teal-500', secondary: 'green-600', accent: 'green-100' },
-            orange: { primary: 'from-orange-500 to-red-500', secondary: 'orange-600', accent: 'orange-100' },
-            pink: { primary: 'from-pink-500 to-rose-500', secondary: 'pink-600', accent: 'pink-100' },
-            indigo: { primary: 'from-indigo-500 to-purple-500', secondary: 'indigo-600', accent: 'indigo-100' },
-            dark: { primary: 'from-gray-700 to-gray-900', secondary: 'gray-800', accent: 'gray-100' },
-            gold: { primary: 'from-yellow-400 to-orange-500', secondary: 'yellow-600', accent: 'yellow-100' }
+        let profileImageUrl = null;
+        
+        const colors = {
+            purple: { gradient: 'linear-gradient(135deg, #667eea, #764ba2)', solid: '#667eea' },
+            blue: { gradient: 'linear-gradient(135deg, #3b82f6, #06b6d4)', solid: '#3b82f6' },
+            green: { gradient: 'linear-gradient(135deg, #10b981, #14b8a6)', solid: '#10b981' },
+            orange: { gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)', solid: '#f59e0b' }
         };
-
-        function selectTemplate(template) {
-            currentTemplate = template;
-            document.querySelectorAll('.template-card').forEach(card => card.classList.remove('active'));
-            event.target.closest('.template-card').classList.add('active');
-            updatePreview();
-        }
-
-        function selectColor(color) {
-            currentColor = color;
-            document.querySelectorAll('.color-option').forEach(option => option.classList.remove('active'));
-            document.querySelector(`[data-color="${color}"]`).classList.add('active');
-            updatePreview();
-        }
 
         function handleImageUpload(input) {
             const file = input.files[0];
@@ -253,330 +228,287 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     profileImageUrl = e.target.result;
-                    updatePreview();
+                    
+                    // Actualizar vista previa en el panel
+                    const preview = document.getElementById('imagePreview');
+                    preview.innerHTML = '';
+                    preview.style.backgroundImage = `url(${profileImageUrl})`;
+                    preview.style.backgroundSize = 'cover';
+                    preview.style.backgroundPosition = 'center';
+                    
+                    // Actualizar tarjeta
+                    updateCard();
                 };
                 reader.readAsDataURL(file);
             }
         }
 
-        function updatePreview() {
-            const data = {
-                fullName: document.getElementById('fullName').value,
-                jobTitle: document.getElementById('jobTitle').value,
-                company: document.getElementById('company').value,
-                description: document.getElementById('description').value,
-                phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value,
-                website: document.getElementById('website').value,
-                location: document.getElementById('location').value,
-                font: document.getElementById('fontFamily').value
-            };
-
-            currentFont = data.font;
-            const preview = document.getElementById('cardPreview');
-            preview.innerHTML = generateCardHTML(data);
+        function changeTemplate(template) {
+            currentTemplate = template;
+            
+            // Actualizar botones
+            document.querySelectorAll('.template-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            updateCard();
         }
 
-        function generateCardHTML(data) {
-            const colors = colorSchemes[currentColor];
-            const fontClass = `font-${currentFont}`;
+        function changeColor(color) {
+            currentColor = color;
             
-            const templates = {
-                elegant: `
-                    <div class="bg-white rounded-3xl p-8 card-shadow ${fontClass} max-w-sm mx-auto">
-                        <div class="text-center mb-6">
-                            <div class="flex items-center justify-center mb-3">
-                                <svg class="w-8 h-8 text-${colors.secondary} mr-2" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
-                                </svg>
-                                <span class="text-lg font-bold text-gray-800">${data.company.toUpperCase()}</span>
-                            </div>
-                            <div class="h-0.5 w-16 bg-gradient-to-r ${colors.primary} mx-auto rounded-full"></div>
-                        </div>
-                        
-                        <div class="text-center mb-6">
-                            <div class="relative inline-block mb-4">
-                                <img src="${profileImageUrl}" alt="Perfil" class="w-24 h-24 rounded-full mx-auto border-4 border-white shadow-lg object-cover">
-                                <div class="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-3 border-white"></div>
-                            </div>
-                            <h1 class="text-2xl font-bold text-gray-800 mb-1">${data.fullName}</h1>
-                            <p class="text-${colors.secondary} font-semibold mb-2">${data.jobTitle}</p>
-                            <div class="inline-block px-3 py-1 bg-gradient-to-r ${colors.primary} text-white text-xs font-semibold rounded-full mb-3">${data.company}</div>
-                            <p class="text-gray-600 text-sm">${data.description}</p>
-                        </div>
-                        
-                        <div class="space-y-2 mb-6 text-sm">
-                            <div class="flex items-center text-gray-700">
-                                <svg class="w-4 h-4 text-${colors.secondary} mr-3" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/></svg>
-                                <span>${data.phone}</span>
-                            </div>
-                            <div class="flex items-center text-gray-700">
-                                <svg class="w-4 h-4 text-${colors.secondary} mr-3" fill="currentColor" viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/></svg>
-                                <span>${data.email}</span>
-                            </div>
-                            <div class="flex items-center text-gray-700">
-                                <svg class="w-4 h-4 text-${colors.secondary} mr-3" fill="currentColor" viewBox="0 0 24 24"><path d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.65 9.66,10H14.34C14.43,10.65 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.17,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.83,18.76 12,19.96M8,8H5.08C6.03,6.34 7.57,5.06 9.4,4.44C8.8,5.55 8.35,6.75 8,8M5.08,16H8C8.35,17.25 8.8,18.45 9.4,19.56C7.57,18.93 6.03,17.65 5.08,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M12,4.03C12.83,5.23 13.5,6.57 13.91,8H10.09C10.5,6.57 11.17,5.23 12,4.03M18.92,8H15.97C15.65,6.75 15.19,5.55 14.59,4.44C16.43,5.07 17.96,6.34 18.92,8M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg>
-                                <span>${data.website}</span>
-                            </div>
-                            <div class="flex items-center text-gray-700">
-                                <svg class="w-4 h-4 text-${colors.secondary} mr-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z"/></svg>
-                                <span>${data.location}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-2">
-                            <button class="bg-gradient-to-r ${colors.primary} text-white py-2 px-3 rounded-lg text-sm font-semibold hover:scale-105 transition-transform">
-                                Contactar
-                            </button>
-                            <button class="bg-gray-100 text-gray-700 py-2 px-3 rounded-lg text-sm font-semibold hover:scale-105 transition-transform">
-                                Guardar
-                            </button>
-                        </div>
-                    </div>
-                `,
-                modern: `
-                    <div class="bg-gradient-to-br ${colors.primary} rounded-2xl p-8 text-white ${fontClass} max-w-sm mx-auto card-shadow">
-                        <div class="flex items-center justify-between mb-6">
-                            <div>
-                                <h1 class="text-2xl font-bold">${data.fullName}</h1>
-                                <p class="text-white/80">${data.jobTitle}</p>
-                            </div>
-                            <img src="${profileImageUrl}" alt="Perfil" class="w-16 h-16 rounded-full border-3 border-white/30 object-cover">
-                        </div>
-                        
-                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6">
-                            <h3 class="font-semibold mb-2">${data.company}</h3>
-                            <p class="text-sm text-white/80">${data.description}</p>
-                        </div>
-                        
-                        <div class="space-y-3 text-sm">
-                            <div class="flex items-center">
-                                <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/></svg>
-                                </div>
-                                <span>${data.phone}</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/></svg>
-                                </div>
-                                <span>${data.email}</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z"/></svg>
-                                </div>
-                                <span>${data.location}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-6 pt-6 border-t border-white/20">
-                            <button class="w-full bg-white text-gray-800 py-3 rounded-lg font-semibold hover:scale-105 transition-transform">
-                                Conectar
-                            </button>
-                        </div>
-                    </div>
-                `,
-                minimal: `
-                    <div class="bg-white rounded-lg border border-gray-200 p-8 ${fontClass} max-w-sm mx-auto shadow-lg">
-                        <div class="text-center mb-8">
-                            <img src="${profileImageUrl}" alt="Perfil" class="w-20 h-20 rounded-full mx-auto mb-4 object-cover">
-                            <h1 class="text-xl font-bold text-gray-900 mb-1">${data.fullName}</h1>
-                            <p class="text-gray-600 text-sm mb-2">${data.jobTitle}</p>
-                            <p class="text-gray-500 text-xs">${data.company}</p>
-                        </div>
-                        
-                        <div class="border-t border-gray-100 pt-6">
-                            <div class="space-y-4 text-sm">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500">Teléfono</span>
-                                    <span class="text-gray-900">${data.phone}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500">Email</span>
-                                    <span class="text-gray-900">${data.email}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500">Web</span>
-                                    <span class="text-gray-900">${data.website}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500">Ubicación</span>
-                                    <span class="text-gray-900">${data.location}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-6 pt-6 border-t border-gray-100">
-                            <p class="text-gray-600 text-sm text-center">${data.description}</p>
-                        </div>
-                    </div>
-                `,
-                creative: `
-                    <div class="bg-white rounded-3xl p-8 ${fontClass} max-w-sm mx-auto card-shadow relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${colors.primary} rounded-full -translate-y-16 translate-x-16 opacity-20"></div>
-                        <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr ${colors.primary} rounded-full translate-y-12 -translate-x-12 opacity-20"></div>
-                        
-                        <div class="relative z-10">
-                            <div class="flex items-start justify-between mb-6">
-                                <div class="flex-1">
-                                    <h1 class="text-2xl font-bold text-gray-900 mb-1">${data.fullName}</h1>
-                                    <p class="text-${colors.secondary} font-semibold mb-2">${data.jobTitle}</p>
-                                    <div class="inline-block px-3 py-1 bg-gradient-to-r ${colors.primary} text-white text-xs font-bold rounded-full">${data.company}</div>
-                                </div>
-                                <img src="${profileImageUrl}" alt="Perfil" class="w-16 h-16 rounded-2xl border-2 border-${colors.accent} object-cover ml-4">
-                            </div>
-                            
-                            <div class="bg-${colors.accent} rounded-2xl p-4 mb-6">
-                                <p class="text-gray-700 text-sm">${data.description}</p>
-                            </div>
-                            
-                            <div class="grid grid-cols-2 gap-4 text-xs">
-                                <div class="text-center p-3 bg-gray-50 rounded-xl">
-                                    <svg class="w-5 h-5 text-${colors.secondary} mx-auto mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/></svg>
-                                    <p class="font-medium">${data.phone}</p>
-                                </div>
-                                <div class="text-center p-3 bg-gray-50 rounded-xl">
-                                    <svg class="w-5 h-5 text-${colors.secondary} mx-auto mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/></svg>
-                                    <p class="font-medium">${data.email}</p>
-                                </div>
-                                <div class="text-center p-3 bg-gray-50 rounded-xl">
-                                    <svg class="w-5 h-5 text-${colors.secondary} mx-auto mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.65 9.66,10H14.34C14.43,10.65 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.17,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.83,18.76 12,19.96M8,8H5.08C6.03,6.34 7.57,5.06 9.4,4.44C8.8,5.55 8.35,6.75 8,8M5.08,16H8C8.35,17.25 8.8,18.45 9.4,19.56C7.57,18.93 6.03,17.65 5.08,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M12,4.03C12.83,5.23 13.5,6.57 13.91,8H10.09C10.5,6.57 11.17,5.23 12,4.03M18.92,8H15.97C15.65,6.75 15.19,5.55 14.59,4.44C16.43,5.07 17.96,6.34 18.92,8M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg>
-                                    <p class="font-medium">${data.website}</p>
-                                </div>
-                                <div class="text-center p-3 bg-gray-50 rounded-xl">
-                                    <svg class="w-5 h-5 text-${colors.secondary} mx-auto mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z"/></svg>
-                                    <p class="font-medium">${data.location}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `
-            };
+            // Actualizar botones
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            updateCard();
+        }
 
-            return templates[currentTemplate] || templates.elegant;
+        function updateCard() {
+            const name = document.getElementById('fullName').value;
+            const job = document.getElementById('jobTitle').value;
+            const company = document.getElementById('company').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const website = document.getElementById('website').value;
+            
+            const colorScheme = colors[currentColor];
+            const initial = name.charAt(0).toUpperCase();
+            
+            // Crear avatar con imagen o inicial
+            const avatarContent = profileImageUrl 
+                ? `<div class="avatar" style="background-image: url(${profileImageUrl}); background-size: cover; background-position: center;"></div>`
+                : `<div class="avatar" style="background: ${colorScheme.gradient};">${initial}</div>`;
+            
+            let cardHTML = '';
+            
+            if (currentTemplate === 'elegant') {
+                cardHTML = `
+                    ${avatarContent}
+                    <div class="name">${name}</div>
+                    <div class="job" style="color: ${colorScheme.solid};">${job}</div>
+                    <div class="company" style="background: ${colorScheme.gradient};">${company}</div>
+                    
+                    <div class="contact">
+                        <div class="contact-item">
+                            <div class="contact-icon" style="background: ${colorScheme.solid};"></div>
+                            <span>${phone}</span>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon" style="background: ${colorScheme.solid};"></div>
+                            <span>${email}</span>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon" style="background: ${colorScheme.solid};"></div>
+                            <span>${website}</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn" style="background: ${colorScheme.gradient};">Contactar</button>
+                    
+                    <div style="margin-top: 20px; font-size: 12px; color: #999;">
+                        © 2025 Leonova Studio
+                    </div>
+                `;
+            } else if (currentTemplate === 'modern') {
+                const modernAvatar = profileImageUrl 
+                    ? `<div class="avatar" style="background-image: url(${profileImageUrl}); background-size: cover; background-position: center; width: 60px; height: 60px; font-size: 18px;"></div>`
+                    : `<div class="avatar" style="background: ${colorScheme.gradient}; width: 60px; height: 60px; font-size: 18px;">${initial}</div>`;
+                
+                cardHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div style="text-align: left;">
+                            <div class="name">${name}</div>
+                            <div class="job" style="color: ${colorScheme.solid};">${job}</div>
+                        </div>
+                        ${modernAvatar}
+                    </div>
+                    
+                    <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                        <strong>${company}</strong>
+                        <p style="margin-top: 5px; font-size: 14px; color: #666;">Especialista en diseño digital y experiencias de usuario.</p>
+                    </div>
+                    
+                    <div class="contact">
+                        <div class="contact-item">📞 ${phone}</div>
+                        <div class="contact-item">✉️ ${email}</div>
+                        <div class="contact-item">🌐 ${website}</div>
+                    </div>
+                    
+                    <button class="btn" style="background: ${colorScheme.gradient};">Conectar</button>
+                    
+                    <div style="margin-top: 20px; font-size: 12px; color: #999;">
+                        © 2025 Leonova Studio
+                    </div>
+                `;
+            } else if (currentTemplate === 'minimal') {
+                const minimalAvatar = profileImageUrl 
+                    ? `<div style="background-image: url(${profileImageUrl}); background-size: cover; background-position: center; width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 20px;"></div>`
+                    : `<div style="background: #f5f5f5; width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; color: #666;">${initial}</div>`;
+                
+                cardHTML = `
+                    ${minimalAvatar}
+                    <div class="name">${name}</div>
+                    <div style="color: #666; margin-bottom: 5px;">${job}</div>
+                    <div style="color: #999; font-size: 14px; margin-bottom: 20px;">${company}</div>
+                    
+                    <div style="border-top: 1px solid #eee; padding-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+                            <span style="color: #999;">Teléfono</span>
+                            <span>${phone}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+                            <span style="color: #999;">Email</span>
+                            <span>${email}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+                            <span style="color: #999;">Web</span>
+                            <span>${website}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; font-size: 12px; color: #999;">
+                        © 2025 Leonova Studio
+                    </div>
+                `;
+            } else if (currentTemplate === 'creative') {
+                cardHTML = `
+                    <div style="position: relative;">
+                        <div style="position: absolute; top: -40px; right: -40px; width: 80px; height: 80px; background: ${colorScheme.gradient}; border-radius: 50%; opacity: 0.2;"></div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+                            <div style="text-align: left; flex: 1;">
+                                <div class="name">${name}</div>
+                                <div class="job" style="color: ${colorScheme.solid};">${job}</div>
+                                <div class="company" style="background: ${colorScheme.gradient}; margin-top: 10px;">${company}</div>
+                            </div>
+                            ${profileImageUrl 
+                                ? `<div class="avatar" style="background-image: url(${profileImageUrl}); background-size: cover; background-position: center; width: 50px; height: 50px; font-size: 16px; border-radius: 15px;"></div>`
+                                : `<div class="avatar" style="background: ${colorScheme.gradient}; width: 50px; height: 50px; font-size: 16px; border-radius: 15px;">${initial}</div>`
+                            }
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 15px; margin-bottom: 20px;">
+                            <p style="font-size: 14px; color: #666;">Especialista en diseño digital, desarrollo web y experiencias de usuario innovadoras.</p>
+                        </div>
+                        
+                        <div style="display: grid; gap: 10px;">
+                            <div style="display: flex; align-items: center; background: #f8f9fa; padding: 10px; border-radius: 10px; font-size: 14px;">
+                                <span style="margin-right: 10px;">📞</span> ${phone}
+                            </div>
+                            <div style="display: flex; align-items: center; background: #f8f9fa; padding: 10px; border-radius: 10px; font-size: 14px;">
+                                <span style="margin-right: 10px;">✉️</span> ${email}
+                            </div>
+                            <div style="display: flex; align-items: center; background: #f8f9fa; padding: 10px; border-radius: 10px; font-size: 14px;">
+                                <span style="margin-right: 10px;">🌐</span> ${website}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px; font-size: 12px; color: #999;">
+                            © 2025 Leonova Studio
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('cardPreview').innerHTML = cardHTML;
         }
 
         function downloadCard() {
-            const data = {
-                fullName: document.getElementById('fullName').value,
-                jobTitle: document.getElementById('jobTitle').value,
-                company: document.getElementById('company').value,
-                description: document.getElementById('description').value,
-                phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value,
-                website: document.getElementById('website').value,
-                location: document.getElementById('location').value,
-                font: document.getElementById('fontFamily').value
-            };
-
-            const fullHTML = generateFullHTML(data);
-            const blob = new Blob([fullHTML], { type: 'text/html' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${data.fullName.replace(/\s+/g, '_')}_tarjeta_digital.html`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
+            const cardContent = document.getElementById('cardPreview').innerHTML;
+            const name = document.getElementById('fullName').value;
             
-            showNotification('¡Tarjeta descargada exitosamente!', 'success');
-        }
-
-        function generateFullHTML(data) {
-            return `<!DOCTYPE html>
+            const fullHTML = `<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${data.fullName} - Tarjeta Digital</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Tarjeta Digital - ${name}</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .font-inter { font-family: 'Inter', sans-serif; }
-        .font-poppins { font-family: 'Poppins', sans-serif; }
-        .font-roboto { font-family: 'Roboto', sans-serif; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 350px;
+            text-align: center;
+        }
     </style>
 </head>
-<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
-    ${generateCardHTML(data)}
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97bf298f64845c86',t:'MTc1NzM0MjAyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<body>
+    <div class="card">${cardContent}</div>
+</body>
 </html>`;
-        }
 
-        function generateLink() {
-            showNotification('¡Enlace generado! (Función demo)', 'success');
+            const blob = new Blob([fullHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = name.replace(/\s+/g, '_') + '_tarjeta.html';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('¡Tarjeta descargada exitosamente! 🎉');
         }
 
         function saveVCard() {
-            const data = {
-                fullName: document.getElementById('fullName').value,
-                jobTitle: document.getElementById('jobTitle').value,
-                company: document.getElementById('company').value,
-                phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value,
-                website: document.getElementById('website').value,
-                location: document.getElementById('location').value
-            };
+            const name = document.getElementById('fullName').value;
+            const job = document.getElementById('jobTitle').value;
+            const company = document.getElementById('company').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const website = document.getElementById('website').value;
 
             const vcard = `BEGIN:VCARD
 VERSION:3.0
-FN:${data.fullName}
-ORG:${data.company}
-TITLE:${data.jobTitle}
-TEL:${data.phone}
-EMAIL:${data.email}
-URL:${data.website}
-ADR:;;${data.location};;;;
+FN:${name}
+ORG:${company}
+TITLE:${job}
+TEL:${phone}
+EMAIL:${email}
+URL:${website}
 END:VCARD`;
 
             const blob = new Blob([vcard], { type: 'text/vcard' });
-            const url = window.URL.createObjectURL(blob);
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${data.fullName.replace(/\s+/g, '_')}.vcf`;
-            document.body.appendChild(a);
+            a.download = name.replace(/\s+/g, '_') + '.vcf';
             a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
+            URL.revokeObjectURL(url);
             
-            showNotification('¡vCard guardada exitosamente!', 'success');
+            showNotification('¡vCard guardada exitosamente! 📇');
         }
 
-        function toggleView(view) {
-            const preview = document.getElementById('cardPreview');
-            if (view === 'mobile') {
-                preview.style.maxWidth = '320px';
-            } else {
-                preview.style.maxWidth = '400px';
-            }
+        function generateLink() {
+            showNotification('¡Enlace generado! (Función demo) 🔗');
         }
 
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white font-medium z-50 transition-all duration-300 ${
-                type === 'success' ? 'bg-green-600' : 'bg-red-600'
-            }`;
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
             notification.textContent = message;
-            
-            document.body.appendChild(notification);
+            notification.style.display = 'block';
             
             setTimeout(() => {
-                notification.style.opacity = '0';
-                setTimeout(() => {
-                    if (document.body.contains(notification)) {
-                        document.body.removeChild(notification);
-                    }
-                }, 300);
+                notification.style.display = 'none';
             }, 3000);
         }
 
         // Inicializar
-        document.addEventListener('DOMContentLoaded', function() {
-            updatePreview();
-        });
+        updateCard();
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97bf82c4115367e6',t:'MTc1NzM0NTY3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
